@@ -19,37 +19,88 @@ let geoCall = "http://api.openweathermap.org/geo/1.0/direct?"
 // const city = "Fort Worth";
 
 
-const city = "Austin";
+// const city = "Austin";
 
 
 
+const storage = "cities";
 
 
+
+const setCity = (name) => {
+    console.log(name);
+
+    let cityArr = [];
+
+    const jsonCities = JSON.stringify(localStorage.getItem(storage));
+    console.log(jsonCities);
+
+    if (jsonCities != null) {
+        cityArr = jsonCities;
+    }
+    
+    if (cityArr.indexOf(city) == -1) {
+        if (cityArr.length == 5) {
+            cityArr.shift();
+            cityArr.append(city);
+        }
+    }
+    console.log(cityArr);
+
+    localStorage.setItem(storage, cityArr);
+
+    
+    for (var i = cityArr.length - 1; i >= 0; i--) {
+        const buttonRow = $("<row></row>")
+        const cityButton = $(`<button class='btn btn-warning'>${city}</button`);
+        cityButton.on('click', () => {
+            weatherCall();
+        });
+        buttonRow.append(cityButton);
+        $(".buttonHome").append(buttonRow);
+        
+    }
+
+}
 
 $(".search").on('click', (e) => {
-    weatherCall();
+    weatherCall(e);
 })
 
 const weatherCall = (e) => {
-    const city = $("#citySearch").val();
+    var city = "";
+
+    if (e.target.textContent == "Submit") {
+        city = $("#citySearch").val();
+    $("#citySearch").val("");
+    } else {
+        city = e.target.text;
+    }
     const queryCity = city.replaceAll(" ", "+");
     const query = `q=${queryCity}&appid=dbd4b78b875c9f3d499f25008225a8e6`;
     const fullGeoCall = geoCall + query;
     $.ajax({
+        // Ajax call to get the geo information based on a city 
         url: fullGeoCall,
         method: "GET"
     }).then( (value) => {
-        // console.log(value);
         const lon = value[0].lon;
         const lat = value[0].lat;
         return [lat, lon];
     }).then( (coords) => {
+
+            // Ajax call to get the information based on 
+            // The geo ajax call 
             $.ajax({
                 url: `${url}lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
             }).then( (value) => {
                 
                 const name = value.name;
+
+                setCity(name);
+                
+
                 const temp = value.main.temp;
                 const humidity = value.main.humidity;
                 const windSpeed = value.wind.speed;
@@ -57,8 +108,11 @@ const weatherCall = (e) => {
                 const description = value.weather[0].description;
                 const icon = value.weather[0].icon;
                 const weatherImg = $(`<img src="http://openweathermap.org/img/wn/${icon}.png">`);
-                $("#forecast").append(weatherImg);
+                $("#forecast").text(weatherImg);
                 $(".cityName").text(name);
+                if ( $(".icon").children().length > 0) {
+                    $(".icon").empty();
+                }
                 $(".icon").append(weatherImg);
                 $(".temperature").text(`Temperature: ${temp}\u00B0F`);
                 $(".windSpeed").text(`Wind speed: ${windSpeed} MPH`);
@@ -72,9 +126,8 @@ const weatherCall = (e) => {
                 // forecast call 
                 url: `http://api.openweathermap.org/data/2.5/forecast?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
-                }).then( (value ) => {
+                }).then( (value) => {
                     final_forecast = [];
-                    console.log(value.list[0]);
                     for (let i = 0; i < value.list.length; i ++ ) {
                         if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "00") {
                             final_forecast.push(value.list[i]);
@@ -85,11 +138,9 @@ const weatherCall = (e) => {
                         const date = i.dt_txt.split(" ")[0];
                         const temp = i.main.temp;
                         const icon = i.weather[0].icon;
-                        console.log(icon)
                         const humidity = i.main.humidity
                         const wind = i.wind.speed;
 
-                        console.log(date, temp, humidity, wind);
 
                         const newForecast = $("<div class='col-2 py-2 bg-dark text-light'></div>");
                         const dayRow = $(`<div class='row'>${date}</div>`);
