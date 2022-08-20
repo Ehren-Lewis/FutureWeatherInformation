@@ -1,0 +1,31 @@
+.header-font {
+    font-size: 2rem;
+}
+.header-bg {
+    background-color: rgb(116, 151, 139);
+}
+
+.button-bg {
+    background-color: rgb(116, 151, 139);
+}
+
+
+.low {
+    background-color: #558B2F;
+}
+
+.mod {
+    background-color: #F9A825;
+}
+
+.high {
+    background-color: #EF6C00;
+}
+
+.very-high {
+    background-color: #B71C1C;
+}
+
+.extreme {
+    background-color: #6A1B9A;
+}
