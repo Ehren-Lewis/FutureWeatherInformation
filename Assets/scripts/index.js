@@ -130,7 +130,6 @@ const weatherCall = (e) => {
                 $(".windSpeed").text(`Wind speed: ${windSpeed} MPH`);
                 $(".humidity").text(`Humidity: ${humidity} %`);
                 return [value.coord.lat, value.coord.lon];
-                //  Add UV Call
             })
              .then( (value) => {
 
@@ -138,7 +137,7 @@ const weatherCall = (e) => {
                 forecast.empty();
                 $.ajax({
                 // forecast call 
-                url: `http://api.openweathermap.org/data/2.5/forecast?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
+                url: `https://api.openweathermap.org/data/2.5/forecast?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
                 }).then( (value) => {
                     final_forecast = [];
@@ -158,7 +157,7 @@ const weatherCall = (e) => {
                         const newForecast = $("<div class='col-2 py-2 bg-dark text-light'></div>");
                         const dayRow = $(`<div class='row'>${date}</div>`);
                         const iconRow = $("<div class='row w-50'></div>");
-                        iconRow.append($(`<img src="http://openweathermap.org/img/wn/${icon}.png">`));
+                        iconRow.append($(`<img src="https://openweathermap.org/img/wn/${icon}.png">`));
                         const tempRow = $( `<div class='row'>Temperature: ${temp}\u00B0F</div>`);
                         const humidityRow = $(`<div class='row'>Humidity: ${humidity}%</div>`);
                         const windRow = $(`<div class='row'>wind: ${wind}MPH</div>`);
