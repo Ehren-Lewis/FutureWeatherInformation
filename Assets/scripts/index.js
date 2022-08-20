@@ -2,13 +2,13 @@
 
 let url = "https://api.openweathermap.org/data/2.5/weather?";
 
-const key = "dbd4b78b875c9f3d499f25008225a8e6";
+const key = "dbd4b78b875c9f3d499f25008225a8e6";         
 
 // const uvKey = "1507eaf0f2f07c897c72e9272325086f";
 const uvKey = "1507eaf0f2f07c897c72e9272325086f";
 
-let uvCall = "https://api.openuv.io/api/v1/uv";
-
+// let uvCall = "https://api.openuv.io/api/v1/uv";
+let uvCall = "'https://api.openuv.io/api/v1/uv";
 
 let geoCall = "https://api.openweathermap.org/geo/1.0/direct?"
 
@@ -30,6 +30,7 @@ for (var i = cityArr.length - 1; i >= 0; i--) {
     $(".resultButtons").append(cityButton);
 
 }
+
 
 
 // Updates the localStorage, as well as the result Buttons list 
@@ -105,6 +106,7 @@ const weatherCall = (e) => {
                 url: `${url}lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
             }).then( (value) => {
+                console.log(value);
                 
                 const name = value.name;
                 setCity(name);
@@ -140,6 +142,7 @@ const weatherCall = (e) => {
                 url: `https://api.openweathermap.org/data/2.5/forecast?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
                 }).then( (value) => {
+     
                     final_forecast = [];
                     for (let i = 0; i < value.list.length; i ++ ) {
                         if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "00") {
@@ -175,9 +178,9 @@ const weatherCall = (e) => {
                         type: "GET",
                         dataType: 'json',
                         beforeSend: (request) => {
-                            request.setRequestHeader('x-access-token', uvKey);
+                            request.setRequestHeader('x-access-token', 'fc039e52d40f69b0474509511aacef2c');
                         },
-                        url: `${uvCall}?lat=${coords[0]}&lng=${coords[1]}`,
+                        url: 'https://api.openuv.io/api/v1/uv?lat=' + coords[0] + '&lng=' + coords[1],
                         success: (value) => {
                             var bg = "";
                             console.log(value);
@@ -195,7 +198,8 @@ const weatherCall = (e) => {
                             $(".UV").append(`<div class='col mb-2'>UV Index: <span class='${bg} p-1 rounded'>${value.result.uv}</span></col>`);
                         },
                         error: (error) => {
-                            alert('An error occured');
+                            alert('The number of daily UV quota calls has been reached, unable to provide the information');
+                            $("#citySearch").val("");
                         }
                     })
                 })
