@@ -115,7 +115,7 @@ const weatherCall = (e) => {
                 const visibility = value.weather[0].main;
                 const description = value.weather[0].description;
                 const icon = value.weather[0].icon;
-                const weatherImg = $(`<img src="http://openweathermap.org/img/wn/${icon}.png">`);
+                const weatherImg = $(`<img src="https://openweathermap.org/img/wn/${icon}.png">`);
 
                 $("#forecast").text(weatherImg);
                 $(".cityName").text(name);
