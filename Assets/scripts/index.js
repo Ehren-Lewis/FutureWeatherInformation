@@ -1,21 +1,16 @@
 
 
-// 2 calls need to be made 
-// current weather
-// and then 5 day forecast 
-// import fetch from "node-fetch";
-// import fetch from "./node_modules/node-fetch/";
-
 let url = "https://api.openweathermap.org/data/2.5/weather?";
 
 const key = "dbd4b78b875c9f3d499f25008225a8e6";
 
+// const uvKey = "1507eaf0f2f07c897c72e9272325086f";
 const uvKey = "1507eaf0f2f07c897c72e9272325086f";
 
 let uvCall = "https://api.openuv.io/api/v1/uv";
 
 
-let geoCall = "http://api.openweathermap.org/geo/1.0/direct?"
+let geoCall = "https://api.openweathermap.org/geo/1.0/direct?"
 
 
 // Puts the cities into the DOM on load 
@@ -27,7 +22,7 @@ if (jsonCities ) {
     cityArr = jsonCities;
 }
 for (var i = cityArr.length - 1; i >= 0; i--) {
-    const cityButton = $(`<button class='btn button-bg'></button`);
+    const cityButton = $(`<button class='btn button-bg mb-1'></button`);
     cityButton.text(cityArr[i]);
     cityButton.on('click', (e) => {
         weatherCall(e);
@@ -64,7 +59,7 @@ const setCity = (name) => {
     
     for (var i = cityArr.length - 1; i >= 0; i--) {
         // const buttonRow = $("<row></row>");
-        const cityButton = $(`<button class='btn button-bg'></button`);
+        const cityButton = $(`<button class='btn button-bg mb-1'></button`);
         cityButton.text(cityArr[i]);
         cityButton.on('click', (e) => {
             weatherCall(e);
@@ -179,7 +174,7 @@ const weatherCall = (e) => {
                 }).then( (coords) => {
                     $.ajax({
                         type: "GET",
-                        dataTtpe: 'json',
+                        dataType: 'json',
                         beforeSend: (request) => {
                             request.setRequestHeader('x-access-token', uvKey);
                         },
@@ -196,9 +191,9 @@ const weatherCall = (e) => {
                             } else if (value.result.uv < 11) {
                                 bg = "very-high";
                             } else {
-                                bg = "extreme"
+                                bg = "extreme";
                             }
-                            $(".UV").append(`<div class='col'>UV Index: <span class='${bg}'>${value.result.uv}</span></col>`);
+                            $(".UV").append(`<div class='col mb-2'>UV Index: <span class='${bg} p-1 rounded'>${value.result.uv}</span></col>`);
                         },
                         error: (error) => {
                             alert('An error occured');
