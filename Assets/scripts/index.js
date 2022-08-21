@@ -142,7 +142,7 @@ const weatherCall = (e) => {
                     for (let i = 0; i < value.list.length; i ++ ) {
 
                         // Gets the forecast at 3pm every day, since original data is 40 long
-                        if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "15") {
+                        if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "00") {
                             final_forecast.push(value.list[i]);
                         }
                     }
