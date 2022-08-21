@@ -1,15 +1,8 @@
 
-
 let url = "https://api.openweathermap.org/data/2.5/weather?";
-
 const key = "dbd4b78b875c9f3d499f25008225a8e6";         
-
-// const uvKey = "1507eaf0f2f07c897c72e9272325086f";
 const uvKey = "1507eaf0f2f07c897c72e9272325086f";
-
-// let uvCall = "https://api.openuv.io/api/v1/uv";
 let uvCall = "'https://api.openuv.io/api/v1/uv";
-
 let geoCall = "https://api.openweathermap.org/geo/1.0/direct?"
 
 
@@ -31,9 +24,8 @@ for (var i = cityArr.length - 1; i >= 0; i--) {
 
 }
 
-
-
 // Updates the localStorage, as well as the result Buttons list 
+// Used after the first then to make sure there is no error thus far 
 const setCity = (name) => {
     
     let cityArr = [];
@@ -83,7 +75,6 @@ const weatherCall = (e) => {
         city = $("#citySearch").val();
     $("#citySearch").val("");
     } else {
-        // console.log(e.target.textContent);
         city = e.target.textContent;
     }
 
@@ -96,6 +87,8 @@ const weatherCall = (e) => {
         url: fullGeoCall,
         method: "GET"
     }).then( (value) => {
+
+        // call used only for geo information 
         const lon = value[0].lon;
         const lat = value[0].lat;
         return [lat, lon];
@@ -106,12 +99,12 @@ const weatherCall = (e) => {
                 url: `${url}lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
             }).then( (value) => {
-                console.log(value);
                 
                 const name = value.name;
                 setCity(name);
                 
-                const temp = value.main.temp;
+                // gathering the needed data 
+                const temp  = value.main.temp;
                 const humidity = value.main.humidity;
                 const windSpeed = value.wind.speed;
                 const visibility = value.weather[0].main;
@@ -122,11 +115,13 @@ const weatherCall = (e) => {
                 $("#forecast").text(weatherImg);
                 $(".cityName").text(name);
 
+                // If there is any present information, remove anything that was appended 
                 if ( $(".icon").children().length > 0) {
                     $(".icon").empty();
                     $(".UV").empty();
                 }
 
+                // Using .text overwrites, no need to remove the children 
                 $(".icon").append(weatherImg);
                 $(".temperature").text(`Temperature: ${temp}\u00B0F`);
                 $(".windSpeed").text(`Wind speed: ${windSpeed} MPH`);
@@ -142,14 +137,17 @@ const weatherCall = (e) => {
                 url: `https://api.openweathermap.org/data/2.5/forecast?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`,
                 method: "GET"
                 }).then( (value) => {
-     
+
                     final_forecast = [];
                     for (let i = 0; i < value.list.length; i ++ ) {
-                        if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "00") {
+
+                        // Gets the forecast at 3pm every day, since original data is 40 long
+                        if (value.list[i].dt_txt.split(" ")[1].substr(0, 2) == "15") {
                             final_forecast.push(value.list[i]);
                         }
                     }
                     
+                        // Gets the needed data for the future forecast 
                         for (let i of final_forecast) {
                         const date = i.dt_txt.split(" ")[0];
                         const temp = i.main.temp;
@@ -157,6 +155,7 @@ const weatherCall = (e) => {
                         const humidity = i.main.humidity
                         const wind = i.wind.speed;
 
+                        // appending to the dom the new information 
                         const newForecast = $("<div class='col-2 py-2 bg-dark text-light'></div>");
                         const dayRow = $(`<div class='row'>${date}</div>`);
                         const iconRow = $("<div class='row w-50'></div>");
@@ -165,6 +164,7 @@ const weatherCall = (e) => {
                         const humidityRow = $(`<div class='row'>Humidity: ${humidity}%</div>`);
                         const windRow = $(`<div class='row'>wind: ${wind}MPH</div>`);
 
+                        // No need to remove the children since it's a fresh row every time 
                         newForecast.append(dayRow);
                         newForecast.append(iconRow);
                         newForecast.append(tempRow);
@@ -172,7 +172,11 @@ const weatherCall = (e) => {
                         newForecast.append(windRow);
                         forecast.append(newForecast);
                     }
+
+                    // return coords for the OpenUV call 
                     return [value.city.coord.lat, value.city.coord.lon];
+
+                    // OpenUV is last since it does not have a return type since its a success and not a .then 
                 }).then( (coords) => {
                     $.ajax({
                         type: "GET",
@@ -180,10 +184,13 @@ const weatherCall = (e) => {
                         beforeSend: (request) => {
                             request.setRequestHeader('x-access-token', 'fc039e52d40f69b0474509511aacef2c');
                         },
+
+                        // Had to use success and error in the ajax because OpenUV required a beforesend 
                         url: 'https://api.openuv.io/api/v1/uv?lat=' + coords[0] + '&lng=' + coords[1],
                         success: (value) => {
+
                             var bg = "";
-                            console.log(value);
+                            // changes bg based on uv index to a certain css class 
                             if (value.result.uv < 3) {
                                 bg = "low";
                             } else if (value.result.uv < 6) {
@@ -197,6 +204,8 @@ const weatherCall = (e) => {
                             }
                             $(".UV").append(`<div class='col mb-2'>UV Index: <span class='${bg} p-1 rounded'>${value.result.uv}</span></col>`);
                         },
+
+                        // special error message if only in the OpenUV call 
                         error: (error) => {
                             alert('The number of daily UV quota calls has been reached, unable to provide the information');
                             $("#citySearch").val("");
@@ -204,14 +213,10 @@ const weatherCall = (e) => {
                     })
                 })
             })
-
-    }
-
+        }
     ).fail( (error) => {
-        alert("There was an error getting the city, please try again");
-        $("#citySearch").val("");
-        console.log(error);
+    alert("There was an error getting the city, please try again");
+    $("#citySearch").val("");
     })
 }
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
 
